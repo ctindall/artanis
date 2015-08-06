@@ -26,7 +26,7 @@ Free Documentation License''.
 #+end_src
 
 
-GNU Artanis is a web application framework(WAF) written in [[http://www.gnu.org/software/guile/][Guile Scheme]].
+GNU Artanis is a web application framework (WAF) written in [[http://www.gnu.org/software/guile/][Guile Scheme]].
 
 A [[http://en.wikipedia.org/wiki/Web_application_framework][web application framework (WAF)]] is a software framework that is designed to support the development of dynamic websites,
 web applications, web services and web resources.
@@ -83,7 +83,7 @@ cd guile-2.0.11 && ./configure && make #(NOTE: this may take very long time even
 sudo make install
 #+end_src
 
-I would NOT recommend you trying to compile/install Guile from Git repo, since it'll take too much time of you.
+I would NOT recommend you trying to compile/install Guile from Git repo, unless you are prepared to waste a lot of time.
 
 *Install dependencies:*
 
@@ -95,14 +95,14 @@ cd guile-dbi-2.1.5 && ./configure && make
 sudo make install
 #+end_src
 
-+ guile-dbd *[Optional]*, there're three dbd, mysql/postgresql/sqlite3
++ guile-dbd *[Optional]*, there are three 'dbd's (database drivers): mysql, postgresql, and sqlite3
 #+begin_src null
 wget -c http://download.gna.org/guile-dbi/guile-dbd-mysql-2.1.4.tar.gz
 tar xvzf guile-dbd-mysql-2.1.4.tar.gz
 cd guile-dbd-mysql-2.1.4 && ./configure && make
 sudo make install
 #+end_src
-You may find other dbd [[http://download.gna.org/guile-dbi][here]]. And the installation is similar.
+You may find other drivers [[http://download.gna.org/guile-dbi][here]], and the installation is similar.
 
 + The latest GNU Artanis:
 #+begin_src null
@@ -126,9 +126,9 @@ git clone git://git.savannah.gnu.org/artanis.git
 git clone git@github.com:NalaGinrut/artanis.git
 #+end_src
 ** Configuration
-Before the first time to run, GNU Artanis needs a config file. The default file name is =/etc/artanis/artanis.conf=.
+Before the you run it, GNU Artanis needs a config file. The default file name is =/etc/artanis/artanis.conf=.
 
-There's a config skeleton named default.conf, you may copy it to =/etc/artanis/artanis.conf=.
+There's a skeleton config named default.conf, which you can copy to =/etc/artanis/artanis.conf=.
 
 #+begin_src nil
 sudo cp /etc/artanis/default.conf /etc/artanis/artanis.conf
@@ -138,7 +138,7 @@ sudo cp /etc/artanis/default.conf /etc/artanis/artanis.conf
 * Hello World
 ** Use Guile REPL and verify GNU Artanis installation
 
-If you're NOT freshman of Guile, please skip this section.
+If you're a seasoned Guile user, you can probably skip this section.
 
 Just type `guile' in your console to enter Guile REPL, and you will see this screen:
 #+begin_src null
@@ -155,7 +155,7 @@ scheme@(guile-user)>
 
 Welcome to Guile world!
 
-Now, we're going to play GNU Artanis. Before we start, please follow these instructions in the REPL to ensure that you installed GNU Artanis correctly:
+Now we're going to play with GNU Artanis. Before we start, please follow these instructions in the REPL to ensure that you've installed GNU Artanis correctly:
 
 *(Just type them, you don't have to understand them at present)*
 
@@ -177,10 +177,10 @@ Anytime you want to Quit just try Ctrl+C, thanks!
 http://0.0.0.0:3000
 #+end_src
 
-Assuming there's a file named "index.html" in the current path. Now you may try http://localhost:3000/index.html in your browser.
-It's simple to fetch static file with the path in URL: http://localhost:3000/path/filename
+Assuming there's a file named "index.html" in the current path, you can try http://localhost:3000/index.html in your browser.
+You can fetch static files with URLs of the form: http://localhost:3000/path/filename
 ** Try simple URL remapping
-Type these code in Guile REPL:
+Type this code in the Guile REPL:
 #+begin_src scheme
 (use-modules (artanis artanis))
 (get "/hello" (lambda () "hello world"))
@@ -191,15 +191,15 @@ Now you can visit http://localhost:8080/hello with your browser, and see the res
 
 /If you encounter "[EXCEPTION] /favicon.ico is abnormal request", please ignore it./
 
-Let me explain these code.
+Let me explain the code:
 
-+ /line 1:/ Load GNU Artanis module, (artanis artanis) is the name.
-
-
-+ /line 2:/ The first argument /get/ is GNU Artanis API corresponding to GET method in HTTP protocol. The second argument "/hello" is the URL rule to register. The Third argument is the handler which will be triggered if the registered URL rule is hit.
++ /line 1:/ Load the GNU Artanis module, (artanis artanis).
 
 
-+ /line 3:/ Run GNU Artanis server, and listenning socket port 8080.
++ /line 2:/ The first argument /get/ is part of the GNU Artanis API corresponding to the HTTP 'GET' method. The second argument "/hello" is the URL rule to register. The Third argument is the handler which will be triggered if the registered URL rule is hit.
+
+
++ /line 3:/ Run GNU Artanis server, listening on port 8080.
 
 You may type Ctrl+C to quit the server according to the hint from your screen.
 ** More complex URL remapping
