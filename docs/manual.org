@@ -29,14 +29,13 @@ Free Documentation License''.
 GNU Artanis is a web application framework (WAF) written in [[http://www.gnu.org/software/guile/][Guile Scheme]].
 
 A [[http://en.wikipedia.org/wiki/Web_application_framework][web application framework (WAF)]] is a software framework that is designed to support the development of dynamic websites,
-web applications, web services and web resources.
+web applications, web services and other web resources.
 The framework aims to alleviate the overhead associated with common activities performed in web development.
-GNU Artanis provides several tools for web development: database access, templating frameworks, session management, [[http://en.wikipedia.org/wiki/Rewrite_engine][URL-remapping]] for [[http://en.wikipedia.org/wiki/Representational_state_transfer][RESTful]], page caching, and so on.
+GNU Artanis provides several tools for web development: database access, templating, session management, [[http://en.wikipedia.org/wiki/Rewrite_engine][URL-remapping]] for [[http://en.wikipedia.org/wiki/Representational_state_transfer][RESTful]] interfaces, page caching, and so on.
 
-This manual describes how to use GNU Artanis, and usage of APIs.
+This manual describes how to use GNU Artanis and its APIs.
 
-Guile is the GNU Ubiquitous Intelligent Language for Extensions, the official extension language for the [[http://www.gnu.org/][GNU operating system]].
-Guile is also an interpreter and compiler for other dynamic programming languages except Scheme programming language.
+Guile is the GNU Ubiquitous Intelligent Language for Extensions, the official extension language for the [[http://www.gnu.org/][GNU operating system]], an implementation of the Scheme programming language, and an interpreter and compiler for other dynamic programming languages as well.
 
 [[http://en.wikipedia.org/wiki/Scheme_%28programming_language%29][Scheme]] is a functional programming language and one of the two main dialects of the programming language [[http://en.wikipedia.org/wiki/Lisp_(programming_language)][Lisp]].
 Scheme follows a minimalist design philosophy specifying a small standard core with powerful tools for language extension.
@@ -47,10 +46,10 @@ In this manual, we'll use this kind of syntax to indicate the usage of API:
 #+end_src
 If you're not comfortable with this syntax, maybe you're a newbie of Scheme, and I would recommend you read [[Basic in Scheme][Basic in Scheme]] chapter first.
 ** No warranty
-We distribute software in the hope that it will be useful, but without any warranty. No author or distributor of this software accepts responsibility to anyone for the consequences of using it or for whether it serves any particular purpose or works at all, unless they say so in writing. This is exactly the same warranty that proprietary software companies offer: none.
+   We distribute software in the hope that it will be useful, but without any warranty. No author or distributor of this software accepts responsibility to anyone for the consequences of using it or for whether it serves any particular purpose or works at all, unless they say so in writing. This is exactly the same warranty that proprietary software companies offer: none.
 * License
-GNU Artanis is [[http://www.gnu.org/philosophy/free-sw.html][Free Software]]. GNU Artanis is under the terms of the GNU Lesser General Public License version 3 or later.
-See the files COPYING.LESSER and COPYING in toplevel of source code.
+GNU Artanis is [[http://www.gnu.org/philosophy/free-sw.html][Free Software]]. GNU Artanis is available under the terms of the GNU Lesser General Public License version 3 or later.
+See the files COPYING.LESSER and COPYING at the toplevel of the source code directory.
 
 The manual you’re now reading is published under the terms of the [[http://www.gnu.org/copyleft/fdl.html][GNU Free Documentation License]] 1.3 or later.
 
@@ -83,7 +82,7 @@ cd guile-2.0.11 && ./configure && make #(NOTE: this may take very long time even
 sudo make install
 #+end_src
 
-I would NOT recommend you trying to compile/install Guile from Git repo, unless you are prepared to waste a lot of time.
+I would NOT recommend trying to compile/install Guile from the Git repo unless you are prepared to waste a lot of time.
 
 *Install dependencies:*
 
@@ -136,6 +135,7 @@ sudo cp /etc/artanis/default.conf /etc/artanis/artanis.conf
 
 (To be continued ...) 
 * Hello World
+
 ** Use Guile REPL and verify GNU Artanis installation
 
 If you're a seasoned Guile user, you can probably skip this section.
@@ -153,7 +153,7 @@ Enter `,help' for help.
 scheme@(guile-user)>
 #+end_src
 
-Welcome to Guile world!
+Welcome to Guile!
 
 Now we're going to play with GNU Artanis. Before we start, please follow these instructions in the REPL to ensure that you've installed GNU Artanis correctly:
 
@@ -163,7 +163,6 @@ Now we're going to play with GNU Artanis. Before we start, please follow these i
 ,use (artanis artanis)
 artanis-version
 #+end_src
-
 The expected output should be similar to this:
 #+begin_src scheme
 $1 = "GNU Artanis-x.x.x"
@@ -213,43 +212,43 @@ Try this code:
 
 Now you can try http://localhost:8080/hello/artanis in your browser.
 
-There're two differences:
-+ 1. The special rule, "=/hello/:who=", /:who/ means you can use /params/ to reference the value of this section of URL with the key "who". src_scheme[:exports code]{(params rc "who")} is the way for that.
+There are two differences:
++ 1. The special rule, "=/hello/:who=", /:who/ means you can use /params/ to reference the value of this section of URL with the key "who". In this example, we use this expression: example: src_scheme[:exports code]{(params rc "who")}. As a result, a GET request to \/hello\/artanis would yield a response of "<p>hello artanis</p>."
 
-+ 2. You may notice that the handler defined as an anonymous function with /lambda/ has one argument /rc/. It means /route context/ which preserve all the related context information. Many GNU Artanis APIs need it, say, /params/.
++ 2. You may notice that the handler is defined as an anonymous function with /lambda/ has one argument, /rc/. This stands for /route context/, which is used by many GNU Artanis APIs, and in particular is need by /params/ in this example.
 
-And /format/ is a Scheme lib function. It is similar to /sprintf/ in C language, which outputs with a formatted pattern.
-The second argument #f (means FALSE) indicates that returning the result as string type rather than printing out.
+/format/ is a Scheme lib function. It is similar to /sprintf/ in the C language, which outputs text with a formatted pattern.
+The second argument #f (means FALSE) indicates that we'd like to return the result as a string rather than printing it out.
 ** Regex in URL remapping
-You can use regex in the URL rule.
+You can use also use regular expressions in the URL rule.
 #+begin_src scheme
 (get "/.+\\.(png|gif|jpeg)" static-page-emitter)
 #+end_src
 
 /static-page-emitter/ is an GNU Artanis API which emits a static file like images to the client.
 ** Database operating
-GNU Artanis supports mysql/postgresql/sqlite3, we use mysql as a example here.
+GNU Artanis supports MySQL, PostgresSQL, and SQLite3, but we'll use MySQL in our example.
 
-Please ensure that your DB service was started before you try.
+First, make sure your database service is up and running.
 
-*/If you encountered any problems, please check your config of DB first./* 
-You can use DB without running a server.
+*/If you encounter any problems, remember to check your database configuration as a first troubleshooting step./* 
+
 #+begin_src scheme
 (use-module (artanis artanis))
 (define conn (connect-db 'mysql #:db-username "your_db_username"
                          #:db-name "your_db_name" #:db-passwd "your_passwd"))
 (define mtable (map-table-from-DB conn))
-((mtable 'create 'Persons '((name varchar 10) (age integer) (email varchar 20))) 'valid?)
+  ((mtable 'create 'Persons '((name varchar 10) (age integer) (email varchar 20))) 'valid?)
 ;; ==> #t
 (mtable 'set 'Persons #:name "nala" #:age 99 #:email "nala@artanis.com")
 (mtable 'get 'Persons #:columns '(name email))
 ;; ==> ((("name" . "nala") ("email" . "nala@artanis.com")))
 #+end_src
 
-+ /map-table-from-DB/ is GNU Artanis API handling tables in DB. Here, we define this mapping as the var /mtable/.
++ /map-table-from-DB/ is a GNU Artanis API handling tables in DB. Here, we define this mapping as the var /mtable/.
 
 
-+ And we can use /mtable/ to handle tables, you can get values from table with 'get command. 
++ /mtable/ will handle our database tables for us. You can get values from table with 'get command. 
 
 
 + /mtable/ is a functon which accepts the first argument as a command, say 'create is a command to create a new table; 'set command is used to insert/update the table; 'get command for fetch the values of specified columns.
@@ -260,7 +259,7 @@ You can use DB without running a server.
 
 + 'create command returns a function too, which also accepts an argument as a command. Here, we use 'valid? command to check if the table has been created successfully.
 
-Here's just simple introduction. You may read the DB section in this manual for detail describing. 
+This is just a simple introduction. You may read the Database section in this manual for a more detailed description. 
 
 Of course, you can use DB in your web application.
 #+begin_src scheme
@@ -276,14 +275,14 @@ Of course, you can use DB in your web application.
 
 Now, try http://localhost:8080/dbtest in your browser.
 
-Here're some explains:
-+ The keyword-value pair src_scheme[:exports code]{#:conn #t} means applying for a DB connection from connection-pool. Then you can use src_scheme[:exports code]{(:conn rc)} to get the allocated connection for DB operations.
+To explain:
++ The keyword-value pair src_scheme[:exports code]{#:conn #t} gets a database connection from the connection ppol. Then you can use src_scheme[:exports code]{(:conn rc)} to get the allocated connection for database operations.
 
 
 + Finally, the handler needs to return a string as the HTTP response body, so we have to use Guile API /object->string/ to convert the query result to string, for this naive example case.
 
 /Exercise: Return a beautiful table in HTML rather than using object->string./
-* Basic in Scheme
+* Scheme Basics
 This chapter introduces some useful documents to help you understand Scheme language well.
 Feel free to come back here if you have any problem with Scheme syntax.
 
@@ -298,9 +297,8 @@ native code in the future.
 
 ** For newbies
 
-If you're not familiar with Guile Scheme, here's a simplest tutorial for you.
-
-If you know basics of Scheme language, please skip this section.
+If you're not familiar with Guile Scheme, this section can serve as a very simple tutorial. If you already have a good grasp of the basics of 
+Scheme language, you can probably skip to the next section.
 
 I would recommend newbies to type/paste the code in Guile REPL following the guide in tutorial: 
 [[http://web-artanis.com/scheme.html][Learn Scheme in 15 minutes]]
@@ -308,7 +306,7 @@ I would recommend newbies to type/paste the code in Guile REPL following the gui
 And here's a nice section in Guile manual for basics in Scheme:
 [[https://www.gnu.org/software/guile/manual/guile.html#Hello-Scheme_0021][Hello Scheme]]
 
-Please don't spend too much time on these tutorials, the purose is to let newbies get a little familiar with the grammar of Scheme.
+The purpose of thse tutorials is simply to let new users become familiar with the basic grammar of Scheme.
 
 ** For Pythoners
 
@@ -317,11 +315,11 @@ These are good articles for Pythoners:
 1. [[http://draketo.de/proj/guile-basics/][Guile basics from the perspective of a Pythonista]]
 2. [[http://draketo.de/proj/py2guile][Going from Python to Guile Scheme]]
 
-Still, please don't spend too much time on them, the purose is to let newbies get a little familiar with the grammar of Scheme.
-
 ** For Rubyist
-Here's a geat article for Rubyist to learn Scheme:
+
+Here's a geat article for Rubyists to learn Scheme:
 1. [[http://wiki.call-cc.org/chicken-for-ruby-programmers][Scheme for ruby programmers]]
+
 ** For deep learners
 
 These two books are very good for learning Scheme seriously:
@@ -329,16 +327,16 @@ These two books are very good for learning Scheme seriously:
 1. [[http://www.scheme.com/tspl4/][The Scheme Programming Language]]
 2. [[http://mitpress.mit.edu/sicp/][Structure and Interpretation of Computer Programs(SICP)]]
 
-Please don't read them if you just want to use GNU Artanis to build your webapp/site in few minutes.
+Scheme rewards serious study, but please don't presume that it's necessary to digest all of this information in order simply to try out and 
+use GNU Artanis to build your web site or application.
 
-If you really want to try these books seriously, please ignore GNU Artanis before you done them.
-
-But once you've done them *carefully*, you may want to write a new GNU Artanis all by yourself.
+If you really want to try these books seriously, you might ignore GNU Artanis until you are done, but if you've studied them *carefully*, 
+you may want to write a new GNU Artanis all by yourself.
 
 Hold your horses. ;-)
-* Basic in GNU Artanis
+* GNU Artanis Basics
 ** How to run a site with GNU Artanis
-This is the simplest case to run a site:
+This is the simplest way to run a site with GNU Artanis:
 #+begin_src scheme
 #!/bin/env guile
 !#
@@ -356,8 +354,8 @@ src_scheme[:exports code]{#:statics} specifies the static files with the extensi
 
 src_scheme[:exports code]{#:cache-statics?} indicates if the static files should be cached.
 
-src_scheme[:exports code]{#:exclude} specifies the types should be excluded. This is useful when you want to generate image files dynamically. Even js/css could be generated dynamically, depends your design.
-** Registering handler of HTTP methods
+src_scheme[:exports code]{#:exclude} specifies the types should be excluded. This is useful when you want to generate image files dynamically. Even js/css could be generated dynamically, depending your design.
+** Registering HTTP handler methods
 Please read [[URL handling][URL handling]].
 ** Emit Response
 #+begin_src scheme
@@ -368,7 +366,7 @@ Please read [[URL handling][URL handling]].
 
 src_scheme[:exports code]{#:status} is HTTP status, 200 in default, which means OK.
 
-src_scheme[:exports code]{#:headers} let you specify customized HTTP headers. The headers must follow certain format, you have to read about the [[http://www.gnu.org/software/guile/manual/html_node/HTTP-Headers.html#Response-Headers][Response Headers]].
+src_scheme[:exports code]{#:headers} let you specify customized HTTP headers. The headers must follow a certain format, which you can read about in  the [[http://www.gnu.org/software/guile/manual/html_node/HTTP-Headers.html#Response-Headers][Response Headers]].
 
 src_scheme[:exports code]{#:mtime} specifies the modify time in the response. GNU Artanis will generate it for you if you just ignore it.
 
@@ -378,7 +376,7 @@ src_scheme[:exports code]{#:mtime} specifies the modify time in the response. GN
 
 *filename* is the filename to be sent as a response.
 
-[headers] is the customized HTTP headers.
+[headers] are the customized HTTP headers.
 
 ** Running server
 #+begin_src scheme
@@ -432,19 +430,19 @@ And run GNU Artanis:
 #+end_src
 * URL remapping
 ** Introduction to URL remapping
-URL remapping is used to modify a web URL's appearance to provide short, pretty or fancy, search engine friendly URLs. 
+URL remapping is used to modify a web URL's appearance to provide short, pretty, fancy, or  search-engine-friendly URLs. 
 It's largly used in modern WAF(web application framework) to provide RESTful web APIs.
 ** URL handling
-According to RFC2616, there're GET, POST, PUT, PATCH and DELETE methods. You may register handler for specified URL rule to these methods.
+RFC2616 defines GET, POST, PUT, PATCH and DELETE methods. For each specified URL rule, you can specify handlers for each of these methods.
 
-/There'd be HEAD method, but in GNU Artanis, HEAD method is handled by the server, users can't use it./
+/There is also the HEAD method, but in GNU Artanis, the HEAD method is handled by the server, not the application./
 
-The usage:
+Usage:
 #+begin_src scheme
 (method rule handler)
 #+end_src
 
-And the handler could be two types, depends on your need:
+Depending on your needs, the handler function can take no arguments, or a single argument, the /route context/ as discussed earlier.
 #+begin_src scheme
 (lambda ()
   ...
@@ -455,17 +453,17 @@ And the handler could be two types, depends on your need:
   ret)
 #+end_src
 
-*ret* also has two types:
+*ret* (the value returned by the handler function) can also be of two types, as is convenient:
 
-+ 1. literal string as the returned response body
++ 1. a literal string as the returned response body, or
 
-+ 2. See [[Emit Response][Emit Response]] 
++ 2. a value returned by  [[Emit Response][the 'response-emit form]]. 
 
 #+begin_src scheme
 (get "/hello" (lambda () "hello world"))
 #+end_src
 
-For POST method:
+For the POST method:
 #+begin_src scheme
 (post "/auth" (lambda (rc) ...))
 #+end_src
@@ -485,9 +483,9 @@ For POST method:
 #+end_src
 * Layouts and Rendering in GNU Artanis
 ** Templating
-Templating provides a way to mix programming code into HTML.
+Templating provides a way to mix programming code into your HTML.
 ** Templating for Pythoners
-If you're familiar with Django, which implemented a DSL(Domain Specific Language) to express presentation rather than program logic. You may realize that the templating of GNU Artanis has different philosophy.
+You may be familiar with Django, which implements a DSL(Domain Specific Language) to express presentation rather than program logic. The templating facilities of GNU Artanis has different philosophy.
 
 In templating of GNU Artanis, it's simply embedded Scheme code into HTML. Why? Because of the philosophy of FP(Functional Programming), everything could be a function. So obviously, src_scheme[:exports code]{(filesizeformat size)} is enough for understanding, and it's just simple function calling in prefix-notation. There's no need to implement DSL like src_python[:exports code]{size|filesizeformat} to increase the complexity of code. Let alone the syntax is very different from Python.
 
